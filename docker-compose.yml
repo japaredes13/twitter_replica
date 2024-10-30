@@ -1,0 +1,52 @@
+services:
+  # Servicio para la aplicación PHP con Dockerfile
+  twitter_app:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: twitter_app
+    restart: always
+    volumes:
+      - .:/var/www/twitter
+    networks:
+      - twitter_network
+
+  # Servicio para Nginx en Alpine
+  twitter_web:
+    image: nginx:alpine
+    container_name: twitter_web
+    restart: always
+    depends_on:
+      - twitter_app
+    ports:
+      - "9000:80"
+    volumes:
+      - .:/var/www/twitter
+      - ./docker/nginx/nginx.conf:/etc/nginx/nginx.conf
+      - ./docker/nginx/mime.types:/etc/nginx/mime.types
+    networks:
+      - twitter_network
+
+  # Servicio de base de datos PostgreSQL
+  twitter_db:
+    image: postgres:13
+    container_name: twitter_db
+    restart: always
+    environment:
+      POSTGRES_DB: twitter
+      POSTGRES_USER: user
+      POSTGRES_PASSWORD: user
+    ports:
+      - "5433:5432"
+    volumes:
+      - ./postgres_data:/var/lib/postgresql/data
+    networks:
+      - twitter_network
+
+networks:
+  twitter_network:
+    driver: bridge
+
+volumes:
+  postgres_data:
+    driver: local
