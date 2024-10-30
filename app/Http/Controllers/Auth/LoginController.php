@@ -16,7 +16,7 @@ class LoginController extends Controller
         if (Auth::guest())
             return view("login");
         else
-            return view("timeline");
+            return view("home");
     }
 
 
@@ -37,5 +37,10 @@ class LoginController extends Controller
         return back()->withErrors([
             'email' => 'Las credenciales no coinciden con nuestros registros.',
         ])->onlyInput('email');
+    }
+
+    public function logout(Request $request){
+        Auth::logout();
+        return redirect()->route('login')->with('success', 'Sesión cerrada exitosamente');
     }
 }
