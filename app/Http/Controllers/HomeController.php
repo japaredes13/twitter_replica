@@ -14,8 +14,10 @@ class HomeController extends Controller
     public function home(){
         if (Auth::guest())
             return view("login");
-        else
-            return view("timeline");
-    
+        
+        $user = Auth::user();
+        $posts = $user->posts;
+        return view("home", compact("posts"));
+
     }
 }

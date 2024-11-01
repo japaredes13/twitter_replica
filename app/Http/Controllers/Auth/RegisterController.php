@@ -10,13 +10,13 @@ use Illuminate\Support\Facades\Hash;
 
 class RegisterController extends Controller
 {
-    public function registrationForm()
-    {
+    protected $REDIRECT_LOGIN = "login";
+
+    public function registrationForm(){
         return view('auth.register');
     }
 
-    public function register(Request $request)
-    {
+    public function register(Request $request){
         $request->validate([
             'name' => 'required|string|max:255',
             'email' => 'required|string|email|max:255|unique:users',
@@ -29,7 +29,6 @@ class RegisterController extends Controller
             'password' => Hash::make($request->password),
         ]);
 
-        auth()->login($user);
-        return redirect()->route('login')->with('success', 'Registro exitoso, ahora puedes iniciar sesión.');
+        return redirect()->route($this->REDIRECT_LOGIN)->with('success', 'Registro exitoso, ahora puedes iniciar sesión.');
     }
 }

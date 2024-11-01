@@ -3,26 +3,22 @@
 namespace App\Http\Controllers;
 
 use App\Models\Post;
+use App\Models\User;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Http\Request;
 
 class PostController extends Controller
 {
-    public function index(){
-        $posts = Post::with('user')->latest()->get();
-        return view('home', compact('posts'));
-    }
-
-    public function store(Request $request)
-    {
+    public function store(Request $request){
         $request->validate([
             'content' => 'required|string|max:280', // Limitamos a 280 caracteres como en Twitter
         ]);
 
-        Auth::user()->posts()->create([
+        $user = Auth::user();
+        $user->posts()->create([
             'content' => $request->content,
         ]);
 
-        return redirect()->route('home')->with('success', 'Tweet publicado.');
+        return redirect()->route('home', ["user" => $user->name])->with('success', 'Tweet publicado.');
     }
 }
